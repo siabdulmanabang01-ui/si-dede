@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Si dede - Sistem Informasi Deteksi Dehidrasi Anak</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #0d9488;
+            --primary-dark: #0f766e;
+            --primary-light: #ccfbf1;
+            --bg-main: #f8fafc;
+            --surface: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 25px -5px rgba(15, 118, 110, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER & NAVIGATION */
+        header {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: white;
+            padding: 18px 24px;
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        nav {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: white;
+            color: var(--primary-dark);
+        }
+
+        /* MAIN CONTAINER */
+        .container {
+            max-width: 900px;
+            margin: 24px auto;
+            padding: 0 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* PAGE MANAGEMENT */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .page.active-page {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS */
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .card h2 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+        }
+
+        /* FORM ELEMENTS */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13.5px;
+            color: #334155;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14.5px;
+            color: var(--text-main);
+            background: #f8fafc;
+            transition: var(--transition);
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2064748b' viewBox='0 0 16 16'><path d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+        }
+
+        .question {
+            margin-bottom: 18px;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid #f1f5f9;
+        }
+
+        .question p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        /* BUTTONS */
+        .button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            font-size: 15.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(13, 148, 136, 0.3);
+            opacity: 0.95;
+        }
+
+        .reset-btn {
+            background: #e2e8f0;
+            color: #475569;
+            box-shadow: none;
+            margin-top: 10px;
+        }
+
+        .reset-btn:hover {
+            background: #cbd5e1;
+            box-shadow: none;
+            color: #1e293b;
+        }
+
+        /* LOGIN PAGE SPECIFIC */
+        .login-wrapper {
+            max-width: 420px;
+            margin: 40px auto;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .login-header h1 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-dark);
+            font-size: 28px;
+            font-weight: 800;
+        }
+
+        /* DASHBOARD METRICS */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+        }
+
+        .metric-card h3 {
+            font-size: 28px;
+            font-family: 'Outfit', sans-serif;
+            color: var(--primary-dark);
+            margin-bottom: 4px;
+        }
+
+        .metric-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .action-card {
+            background: #f0fdf4;
+            border: 1.5px dashed #bbf7d0;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .action-card:hover {
+            background: #dcfce7;
+            transform: translateY(-2px);
+        }
+
+        .action-card h4 {
+            color: #166534;
+            margin-bottom: 4px;
+        }
+
+        /* RESULT BOXES */
+        .hasil-box {
+            padding: 24px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+        }
+
+        .hasil-box h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .tidak-dehidrasi { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+        .dehidrasi { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+        .berat { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+
+        .hasil-detail {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .hasil-detail h4 {
+            color: #475569;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .warning {
+            background: #fff7ed;
+            border-left: 4px solid #f97316;
+            color: #c2410c;
+            padding: 16px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin-top: 20px;
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+
+        /* HISTORY TABLE */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 12px 16px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        footer {
+            text-align: center;
+            padding: 24px 20px;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-top: auto;
+        }
+
+        @media (max-width: 650px) {
+            .grid, .dashboard-grid, .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            .header-container {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MAIN HEADER -->
+    <header id="mainHeader" style="display: none;">
+        <div class="header-container">
+            <div class="logo" onclick="navigateTo('dashboardPage')">💧 SI DEDE</div>
+            <nav>
+                <button class="nav-btn" id="nav-dashboardPage" onclick="navigateTo('dashboardPage')">Dashboard</button>
+                <button class="nav-btn" id="nav-deteksiPage" onclick="navigateTo('deteksiPage')">Deteksi Baru</button>
+                <button class="nav-btn" id="nav-riwayatPage" onclick="navigateTo('riwayatPage')">Riwayat</button>
+                <button class="nav-btn" style="background: rgba(239, 68, 68, 0.2);" onclick="logout()">Keluar</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. HALAMAN LOGIN -->
+        <div id="loginPage" class="page active-page">
+            <div class="login-wrapper">
+                <div class="card">
+                    <div class="login-header">
+                        <h1>💧 SI DEDE</h1>
+                        <p style="color: var(--text-muted); font-size: 14px; margin-top: 4px;">Sistem Informasi Deteksi Dini Dehidrasi Anak</p>
+                    </div>
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label for="username">Nama Pengguna / Email</label>
+                            <input type="text" id="username" placeholder="Masukkan username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Kata Sandi</label>
+                            <input type="password" id="password" placeholder="Masukkan kata sandi" required>
+                        </div>
+                        <button type="submit" class="button">Masuk ke Sistem</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. HALAMAN DASHBOARD -->
+        <div id="dashboardPage" class="page">
+            <div class="card">
+                <h2>👋 Selamat Datang, <span id="userDisplayName">Tenaga Kesehatan</span></h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-top: -10px; margin-bottom: 20px;">
+                    Panel ringkasan evaluasi dan deteksi dini dehidrasi pada pasien anak.
+                </p>
+
+                <div class="dashboard-grid">
+                    <div class="metric-card">
+                        <h3 id="statTotal">0</h3>
+                        <p>Total Pemeriksaan</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3 id="statRingan" style="color: #b45309;">0</h3>
+                        <p>Dehidrasi Ringan/Sedang</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3 id="statBerat" style="color: #b91c1c;">0</h3>
+                        <p>Dehidrasi Berat</p>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <div class="action-card" onclick="navigateTo('deteksiPage')">
+                        <h4>🔍 Deteksi Dini Baru</h4>
+                        <p style="font-size: 13px; color: #15803d;">Lakukan skoring kualitatif dehidrasi pada anak</p>
+                    </div>
+                    <div class="action-card" style="background: #f0f9ff; border-color: #bae6fd;" onclick="navigateTo('riwayatPage')">
+                        <h4 style="color: #0369a1;">📜 Lihat Riwayat</h4>
+                        <p style="font-size: 13px; color: #0284c7;">Akses catatan riwayat pemeriksaan pasien</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. HALAMAN DETEKSI DEHIDRASI -->
+        <div id="deteksiPage" class="page">
+            <div class="card">
+                <h2>👤 Identitas Pasien</h2>
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="nama">Nama / Inisial Pasien</label>
+                        <input type="text" id="nama" placeholder="Contoh: An. A">
+                    </div>
+                    <div class="form-group">
+                        <label for="umur">Umur (tahun)</label>
+                        <input type="number" id="umur" min="0" placeholder="Contoh: 5">
+                    </div>
+                    <div class="form-group">
+                        <label for="berat">Berat Badan (kg)</label>
+                        <input type="number" id="berat" min="0" step="0.1" placeholder="Contoh: 18">
+                    </div>
+                    <div class="form-group">
+                        <label for="bab">Frekuensi BAB (kali/hari)</label>
+                        <input type="number" id="bab" min="0" placeholder="Contoh: 6">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🩺 Pengkajian Tanda Dehidrasi</h2>
+                <div class="question">
+                    <p>1. Kondisi umum anak</p>
+                    <select id="kondisi">
+                        <option value="">-- Pilih kondisi --</option>
+                        <option value="0">Baik / aktif</option>
+                        <option value="1">Gelisah / rewel</option>
+                        <option value="2">Letargis / tidak sadar</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <p>2. Kondisi mata</p>
+                    <select id="mata">
+                        <option value="">-- Pilih kondisi --</option>
+                        <option value="0">Normal</option>
+                        <option value="1">Cekung</option>
+                        <option value="2">Sangat cekung</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <p>3. Rasa haus / kemampuan minum</p>
+                    <select id="minum">
+                        <option value="">-- Pilih kondisi --</option>
+                        <option value="0">Minum normal / tidak haus</option>
+                        <option value="1">Haus / minum banyak</option>
+                        <option value="2">Tidak mampu minum / minum buruk</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <p>4. Turgor kulit</p>
+                    <select id="turgor">
+                        <option value="">-- Pilih kondisi --</option>
+                        <option value="0">Kembali cepat</option>
+                        <option value="1">Kembali lambat</option>
+                        <option value="2">Kembali sangat lambat</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <p>5. Produksi urine</p>
+                    <select id="urine">
+                        <option value="">-- Pilih kondisi --</option>
+                        <option value="0">Normal</option>
+                        <option value="1">Berkurang</option>
+                        <option value="2">Sangat berkurang / tidak ada</option>
+                    </select>
+                </div>
+                <div class="question">
+                    <p>6. Kondisi mukosa mulut</p>
+                    <select id="mukosa">
+                        <option value="">-- Pilih kondisi --</option>
+                        <option value="0">Lembap</option>
+                        <option value="1">Kering</option>
+                        <option value="2">Sangat kering</option>
+                    </select>
+                </div>
+
+                <button class="button" onclick="prosesDeteksi()">
+                    <span>🔍</span> DETEKSI DEHIDRASI
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. HALAMAN HASIL DETEKSI -->
+        <div id="hasilPage" class="page">
+            <div class="card">
+                <h2>📊 Hasil Diagnosa & Evaluasi</h2>
+
+                <div id="hasilBox" class="hasil-box">
+                    <h3 id="resKategori"></h3>
+                    <p id="resDeskripsi"></p>
+                </div>
+
+                <div class="hasil-detail">
+                    <h4>Ringkasan Pasien</h4>
+                    <p id="resDataPasien"></p>
+
+                    <h4>Skor & Evaluasi</h4>
+                    <p id="resSkor"></p>
+                </div>
+
+                <div class="warning">
+                    ⚠️ <strong>Catatan Penting:</strong><br>
+                    Hasil ini merupakan alat bantu deteksi dini dan pembelajaran. Penilaian klinis tetap harus dilakukan oleh tenaga kesehatan berdasarkan pemeriksaan fisik, tanda vital, dan pedoman klinis yang berlaku.
+                </div>
+
+                <button class="button" style="margin-top: 20px;" onclick="navigateTo('deteksiPage')">
+                    <span>🔄</span> Pemeriksaan Baru
+                </button>
+                <button class="button reset-btn" onclick="navigateTo('riwayatPage')">
+                    <span>📜</span> Lihat Riwayat Pemeriksaan
+                </button>
+            </div>
+        </div>
+
+        <!-- 5. HALAMAN RIWAYAT PEMERIKSAAN -->
+        <div id="riwayatPage" class="page">
+            <div class="card">
+                <h2>📜 Riwayat Pemeriksaan Pasien</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Nama Pasien</th>
+                                <th>Umur</th>
+                                <th>Skor</th>
+                                <th>Hasil Diagnosa</th>
+                            </tr>
+                        </thead>
+                        <tbody id="riwayatTableBody">
+                            <!-- Data akan dimuat secara dinamis via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        SI DEDE – Deteksi Dini Dehidrasi Anak<br>
+        Media Pembelajaran & Sistem Pendukung Keputusan Keperawatan Gawat Darurat
+    </footer>
+
+    <script>
+        // INIT STATE
+        let records = JSON.parse(localStorage.getItem("si dede_records")) || [];
+
+        // NAVIGASI
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(pageId).classList.add('active-page');
+            
+            const activeNav = document.getElementById('nav-' + pageId);
+            if (activeNav) activeNav.classList.add('active');
+
+            if (pageId === 'dashboardPage') updateDashboardStats();
+            if (pageId === 'riwayatPage') renderRiwayatTable();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // LOGIN & LOGOUT
+        function handleLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            localStorage.setItem("si dede_user", username);
+            
+            document.getElementById('mainHeader').style.display = 'block';
+            document.getElementById('userDisplayName').innerText = username;
+            navigateTo('dashboardPage');
+        }
+
+        function logout() {
+            localStorage.removeItem("si dede_user");
+            document.getElementById('mainHeader').style.display = 'none';
+            navigateTo('loginPage');
+        }
+
+        // PROSES DETEKSI DEHIDRASI
+        function prosesDeteksi() {
+            const nama = document.getElementById("nama").value || "Anak X";
+            const umur = document.getElementById("umur").value;
+            const berat = document.getElementById("berat").value;
+            const bab = document.getElementById("bab").value;
+
+            const kondisi = document.getElementById("kondisi").value;
+            const mata = document.getElementById("mata").value;
+            const minum = document.getElementById("minum").value;
+            const turgor = document.getElementById("turgor").value;
+            const urine = document.getElementById("urine").value;
+            const mukosa = document.getElementById("mukosa").value;
+
+            if (!umur || !berat || !bab || kondisi === "" || mata === "" || minum === "" || turgor === "" || urine === "" || mukosa === "") {
+                alert("Mohon lengkapi seluruh data pengkajian.");
+                return;
+            }
+
+            const skor = Number(kondisi) + Number(mata) + Number(minum) + Number(turgor) + Number(urine) + Number(mukosa);
+
+            let kategori = "";
+            let deskripsi = "";
+            let className = "";
+
+            if (skor <= 2) {
+                kategori = "TIDAK DEHIDRASI";
+                deskripsi = "Tidak ditemukan tanda dehidrasi yang bermakna berdasarkan skor pengkajian.";
+                className = "tidak-dehidrasi";
+            } else if (skor <= 6) {
+                kategori = "DEHIDRASI RINGAN - SEDANG";
+                deskripsi = "Ditemukan beberapa tanda yang mengarah pada dehidrasi. Diperlukan rehidrasi oral dan pemantauan klinis.";
+                className = "dehidrasi";
+            } else {
+                kategori = "DEHIDRASI BERAT";
+                deskripsi = "Ditemukan tanda-tanda dehidrasi berat. Segera lakukan penanganan darurat rehidrasi intravena!";
+                className = "berat";
+            }
+
+            // SIMPAN DATA
+            const newRecord = {
+                id: Date.now(),
+                tanggal: new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
+                nama: nama,
+                umur: umur,
+                berat: berat,
+                bab: bab,
+                skor: skor,
+                kategori: kategori,
+                className: className
+            };
+
+            records.unshift(newRecord);
+            localStorage.setItem("si dede_records", JSON.stringify(records));
+
+            // TAMPILKAN DI HALAMAN HASIL
+            document.getElementById("resKategori").innerText = kategori;
+            document.getElementById("resDeskripsi").innerText = deskripsi;
+            document.getElementById("hasilBox").className = "hasil-box " + className;
+            document.getElementById("resDataPasien").innerHTML = `
+                <strong>Nama:</strong> ${nama} | <strong>Umur:</strong> ${umur} tahun | <strong>Berat:</strong> ${berat} kg | <strong>Frekuensi BAB:</strong> ${bab} kali/hari
+            `;
+            document.getElementById("resSkor").innerHTML = `Total Skor Pengkajian: <strong>${skor} poin</strong>`;
+
+            resetFormInputs();
+            navigateTo('hasilPage');
+        }
+
+        function resetFormInputs() {
+            document.querySelectorAll("input").forEach(input => input.value = "");
+            document.querySelectorAll("select").forEach(select => select.selectedIndex = 0);
+        }
+
+        // DASHBOARD STATS
+        function updateDashboardStats() {
+            document.getElementById('statTotal').innerText = records.length;
+            document.getElementById('statRingan').innerText = records.filter(r => r.skor > 2 && r.skor <= 6).length;
+            document.getElementById('statBerat').innerText = records.filter(r => r.skor > 6).length;
+        }
+
+        // RENDER TABLE RIWAYAT
+        function renderRiwayatTable() {
+            const tbody = document.getElementById("riwayatTableBody");
+            tbody.innerHTML = "";
+
+            if (records.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Belum ada data pemeriksaan tersimpan.</td></tr>`;
+                return;
+            }
+
+            records.forEach(r => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${r.tanggal}</td>
+                    <td><strong>${r.nama}</strong></td>
+                    <td>${r.umur} Thn</td>
+                    <td>${r.skor} Poin</td>
+                    <td><span class="badge-status ${r.className}">${r.kategori}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // AUTO LOGIN CHECK ON LOAD
+        window.onload = function() {
+            const savedUser = localStorage.getItem("si dede_user");
+            if (savedUser) {
+                document.getElementById('mainHeader').style.display = 'block';
+                document.getElementById('userDisplayName').innerText = savedUser;
+                navigateTo('dashboardPage');
+            } else {
+                navigateTo('loginPage');
+            }
+        };
+    </script>
+</body>
+</html>
